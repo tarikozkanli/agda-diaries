@@ -35,6 +35,10 @@ module TürKuramı where
     sıfır : Doğal
     ard   : Doğal → Doğal
 
+  -- Bu pragma sayesinde tanımladığımız Doğal
+  -- türümüz Agda'nın kendi eşlenik türü ile
+  -- ilişkilendiriliyor ki normal rakamlar ile
+  -- doğal sayıları ifade edebilelim.
   {-# BUILTIN NATURAL Doğal #-}
 
   -- Doğal sayılarda toplama işlemi
@@ -54,12 +58,12 @@ module TürKuramı where
   ard a × b = b + (a × b)
   -- (1 + a) × b  = b + ab
 
-  -- Tipleri değişkenlere atamak
+  -- Türleri değişkenlere atamak
   BenimDoğal : Tür
   BenimDoğal = Doğal
 
-  -- Her tip için çalışan '_aynı' işlevi
-  --  A bir tip değişkenidir.
+  -- Her tür için çalışan '_aynı' işlevi
+  -- A bir tür değişkenidir.
   _aynı : {A : Tür} → A → A
   a aynı = a
 
@@ -69,7 +73,7 @@ module TürKuramı where
   eğer yanlış ise a değilse b = b
 
 
-  -- Çok tözlü veri yapısı : Dizelge
+  -- Çok türlü veri yapısı : Dizelge
   data Dizelge (A : Tür) : Tür where
     []   : Dizelge A
     _::_ : A → Dizelge A → Dizelge A
@@ -78,7 +82,7 @@ module TürKuramı where
   infixr 5 _::_
 
 
-  -- Çift/Çarpım tözü
+  -- Çift/Çarpım türü
   data _x_ (A B : Tür) : Tür where
     _,_ : A → B → A x B
 
@@ -236,3 +240,39 @@ module TürKuramı where
   dizelge'1 = (3 , doğru :: yanlış :: yanlış :: [])
   -- dizelge1 = (2, doğru :: yanlış :: yanlış :: [])
   -- tür doğrulamasından geçmeyecektir.
+
+  data Hangisi (A B : Tür) : Tür where
+    sol : A → Hangisi A B
+    sağ : B → Hangisi A B
+
+  seçenekler : {A B C : Tür} → Hangisi A B
+                → (A → C) → (B → C) → C
+  seçenekler (sol a) k1 k2 = k1 a
+  seçenekler (sağ b) k1 k2 = k2 b
+
+  -- İlk bakışta doğru ve yanlış ile ⊤ ve ⊥ aynı şeylermiş gibi görünüyor.
+  -- Ama ilki bizim yarattığımız bir türün değerleri diğerleri ise kendileri türler.
+  -- Boolean mantığı ile Önermeler mantığı arasındaki fark.
+  data ⊤ : Tür where
+    dd : ⊤
+
+  -- Boş tür, yanlış önermeleri temsil ediyor. Dikkat edilirse
+  -- kısmi işlevleri kabul eden Haskell gibi dillerde bu türleri
+  -- tanımlamak mümkün değildir. Tümcü Agda gibi dillerde münkündür.
+  data ⊥ : Tür where
+
+  -- Boş bir türden birey yaratmak mümkün olmadığından saçma deseni
+  -- kullanıyoruz ().
+  saçma : {A : Tür} → ⊥ → A
+  saçma ()
+
+  -- Önerme: P ise P, P → P
+  -- İşlev: Aynılık işlevi
+  kanıt1 : {P : Tür} → P → P
+  kanıt1 p = p
+
+  -- Önerme: Eğer ((P ise Q) ve (Q ise R)) ise P ise R
+  -- (P → Q) x (Q → R) → P → R
+  -- İşlev: Bileşik işlev.
+  kanıt2 : {P Q R : Tür} →  (P → Q) x (Q → R) → P → R
+  kanıt2 (f , g) = λ x → g (f x)
