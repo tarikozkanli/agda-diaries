@@ -274,5 +274,12 @@ module TürKuramı where
   -- Önerme: Eğer ((P ise Q) ve (Q ise R)) ise P ise R
   -- (P → Q) x (Q → R) → P → R
   -- İşlev: Bileşik işlev.
+  -- Dikkat edilirse bunun işlev bileşke işlevinin serilmemiş
+  -- hali olduğu görülür.
   kanıt2 : {P Q R : Tür} →  (P → Q) x (Q → R) → P → R
   kanıt2 (f , g) = λ x → g (f x)
+
+  -- Önerme: Eğer ((P veya Q) ise R) ise (P ise R) ve (Q ise R)
+  -- (Hangisi P Q) → R → (P → R) x (Q → R)
+  kanıt3 : {P Q R : Tür} → (Hangisi P Q → R) → (P → R) x (Q → R)
+  kanıt3 işlv = ((λ h → işlv (sol h)) , λ h → işlv (sağ h))
