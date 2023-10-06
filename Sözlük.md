@@ -6,8 +6,8 @@
 * Taşıyıcı: Vector
 * İşlev: Function
 * İşlev Bileşkesi: Function composition
-* serilmiş işlev: Curried function
-* serilmemiş işlev: Uncurried function
+* Serilmiş işlev: Curried function
+* Serilmemiş işlev: Uncurried function
 * Kanıt: Proof
 * Önerme: Proposition
 * İç çarpım: Dot product
