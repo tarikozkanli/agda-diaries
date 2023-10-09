@@ -14,4 +14,4 @@
 * Doğal: Natural number
 * Doğruluk: Boolean
 * Belki: Maybe
-* Hangisi: Either
+* Hangisi: Either 
