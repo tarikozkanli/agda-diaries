@@ -14,4 +14,7 @@
 * Doğal: Natural number
 * Doğruluk: Boolean
 * Belki: Maybe
-* Hangisi: Either 
+* Hangisi: Either
+* Dışlanan orta kanunu: Law of excluded middle
+* İzge: Code
+* Öğretge: Tutorial

@@ -1,5 +1,9 @@
 module TürKuramı where
 
+-- Jesper Cocks'un "Programming and Proving in Agda" öğretgesindeki
+-- izgeler Türkçeleştirilmiştir. İzgeler Türkçeleştirilirken
+-- Türkçe'nin doğasına uygun bazı yapı değişiklikleri yapılmıştır.
+
   -- Tür kuramında türe küme demeyelim
   Tür = Set
 
@@ -283,3 +287,30 @@ module TürKuramı where
   -- (Hangisi P Q) → R → (P → R) x (Q → R)
   kanıt3 : {P Q R : Tür} → (Hangisi P Q → R) → (P → R) x (Q → R)
   kanıt3 işlv = ((λ h → işlv (sol h)) , λ h → işlv (sağ h))
+
+  -- Dışlanan orta kanununun çifte değilleme çevirisi kanıtı
+  garip : {P : Tür} → (Hangisi P (P → ⊥) → ⊥) → ⊥
+  garip h = h (sağ λ z → h (sol z))
+
+  -- Curry-Howard eşleşmesine göre önermeler tür olduğundan çift sayı
+  -- olma özelliğini bir tür olarak tanımlayabiliriz.
+  data Çiftsayı : Doğal → Tür where
+    sıfırÇift : Çiftsayı sıfır
+    ardardÇift : {d : Doğal} → Çiftsayı d → Çiftsayı (ard (ard d))
+
+  6-çifttir : Çiftsayı 6
+  6-çifttir = ardardÇift (ardardÇift (ardardÇift sıfırÇift))
+
+  7-çift-değildir : Çiftsayı 7 → ⊥
+  7-çift-değildir (ardardÇift (ardardÇift (ardardÇift ())))
+
+  data Doğrumu : Doğruluk → Tür where
+    DoğruDoğru : Doğrumu doğru
+
+  _=Doğal_ : Doğal → Doğal → Doğruluk
+  sıfır =Doğal sıfır = doğru
+  (ard a) =Doğal (ard b) = a =Doğal b
+  _ =Doğal _ = yanlış
+
+  uzunluk-3 : Doğrumu (((1 :: 2 :: 3 :: []) uzunluk) =Doğal 3)
+  uzunluk-3 = DoğruDoğru
