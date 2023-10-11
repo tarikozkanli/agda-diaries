@@ -39,7 +39,7 @@ module TürKuramı where
     sıfır : Doğal
     ard   : Doğal → Doğal
 
-  -- Bu pragma sayesinde tanımladığımız Doğal
+  -- Bu eklenti sayesinde tanımladığımız Doğal
   -- türümüz Agda'nın kendi eşlenik türü ile
   -- ilişkilendiriliyor ki normal rakamlar ile
   -- doğal sayıları ifade edebilelim.
@@ -294,6 +294,7 @@ module TürKuramı where
 
   -- Curry-Howard eşleşmesine göre önermeler tür olduğundan çift sayı
   -- olma özelliğini bir tür olarak tanımlayabiliriz.
+  -- sıfır çift sayıdır ve eğer d çift ise d + 2 de çifttir.
   data Çiftsayı : Doğal → Tür where
     sıfırÇift : Çiftsayı sıfır
     ardardÇift : {d : Doğal} → Çiftsayı d → Çiftsayı (ard (ard d))
@@ -314,3 +315,30 @@ module TürKuramı where
 
   uzunluk-3 : Doğrumu (((1 :: 2 :: 3 :: []) uzunluk) =Doğal 3)
   uzunluk-3 = DoğruDoğru
+
+  ikikatı : Doğal → Doğal
+  ikikatı sıfır = sıfır
+  ikikatı (ard d) = ard (ard (ikikatı d))
+
+  -- herhangi bir doğal sayının iki katının çift olduğunun kanıtı.
+  -- (evrensel kanıt)
+  ikikatı-çifttir : (d : Doğal) → Çiftsayı (ikikatı d)
+  ikikatı-çifttir sıfır = sıfırÇift
+  ikikatı-çifttir (ard d) = ardardÇift (ikikatı-çifttir d)
+
+  -- Herhangi bir doğal sayının kendine eşit olduğunun kanıtı.
+  -- (evrensel kanıt)
+  d-eşittir-d : (d : Doğal) → Doğrumu (d =Doğal d)
+  d-eşittir-d sıfır = DoğruDoğru
+  d-eşittir-d (ard d) = d-eşittir-d d
+
+  -- İki katının bir düzine, 12, olan bir sayının var olduğunun
+  -- kanıtı. (Varoluşsal kanıt)
+  yarım-düzine : Σ Doğal (λ d → Doğrumu ((d + d) =Doğal 12))
+  yarım-düzine = 6 , DoğruDoğru
+
+  sıfır-veya-ardıl : (d : Doğal) →
+          Hangisi (Doğrumu (d =Doğal sıfır))
+                  (Σ Doğal (λ e → Doğrumu (d =Doğal (ard e))))
+  sıfır-veya-ardıl sıfır = sol DoğruDoğru
+  sıfır-veya-ardıl (ard d) = sağ (d , d-eşittir-d d)

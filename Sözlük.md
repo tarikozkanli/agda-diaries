@@ -18,3 +18,4 @@
 * Dışlanan orta kanunu: Law of excluded middle
 * İzge: Code
 * Öğretge: Tutorial
+* Eklenti: Pragma (Agda, Haskell, Idris etc.)
