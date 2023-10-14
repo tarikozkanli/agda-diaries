@@ -19,3 +19,5 @@
 * İzge: Code
 * Öğretge: Tutorial
 * Eklenti: Pragma (Agda, Haskell, Idris etc.)
+* Bakışlılık / Bakışık: Simetri / Simetrik
+Kalandaşlık: Congruence 

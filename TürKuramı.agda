@@ -3,6 +3,8 @@ module TürKuramı where
 -- Jesper Cocks'un "Programming and Proving in Agda" öğretgesindeki
 -- izgeler Türkçeleştirilmiştir. İzgeler Türkçeleştirilirken
 -- Türkçe'nin doğasına uygun bazı yapı değişiklikleri yapılmıştır.
+-- Bu öğretge konuya kuramsal ve uygulamasal açıdan giriş için
+-- kullanılabilecek en uygun metinlerden biridir.
 
   -- Tür kuramında türe küme demeyelim
   Tür = Set
@@ -199,6 +201,8 @@ module TürKuramı where
   taşıKoy (s :: tler) sıfır t = t :: tler
   taşıKoy (s :: tler) (ard sıra) t =  s :: (taşıKoy tler sıra t)
 
+
+  -- Bağımlı çift türü.
   data Σ (A : Tür) (B : A → Tür) : Tür where
     _,_ : (a : A) → B a → Σ A B
 
@@ -313,6 +317,7 @@ module TürKuramı where
   (ard a) =Doğal (ard b) = a =Doğal b
   _ =Doğal _ = yanlış
 
+  -- Türdeki dizelgenin uzunluğu 3 değilse tür doğrulanmaz.
   uzunluk-3 : Doğrumu (((1 :: 2 :: 3 :: []) uzunluk) =Doğal 3)
   uzunluk-3 = DoğruDoğru
 
@@ -332,13 +337,58 @@ module TürKuramı where
   d-eşittir-d sıfır = DoğruDoğru
   d-eşittir-d (ard d) = d-eşittir-d d
 
-  -- İki katının bir düzine, 12, olan bir sayının var olduğunun
-  -- kanıtı. (Varoluşsal kanıt)
+  -- İki katının bir düzine, 12, olan bir doğal sayının var
+  -- olduğunun kanıtı. (Varoluşsal kanıt)
   yarım-düzine : Σ Doğal (λ d → Doğrumu ((d + d) =Doğal 12))
   yarım-düzine = 6 , DoğruDoğru
 
+  -- Her doğal sayı ya sıfırdır ya da başka bir doğal sayının
+  -- ardılıdır.
   sıfır-veya-ardıl : (d : Doğal) →
           Hangisi (Doğrumu (d =Doğal sıfır))
                   (Σ Doğal (λ e → Doğrumu (d =Doğal (ard e))))
   sıfır-veya-ardıl sıfır = sol DoğruDoğru
   sıfır-veya-ardıl (ard d) = sağ (d , d-eşittir-d d)
+
+  -- Aynılık türü. Aynılık işlevinin türü ile karıştırmamak gerekir.
+  -- yans "yasıma" nın kısaltılmış hali olarak düşünülmeli.
+  data _≡_ {A : Tür} : A → A → Tür where
+    yans : {a : A} → a ≡ a
+
+  infix 4 _≡_
+
+  -- '1 + 1 = 2' önermesinin kanıtı. Öğretgede bunun Whitehead ve Russell'ın
+  -- ünlü kitapları 'Principia Mathematica' da 362. sayfada mümkün olabildiğini
+  -- burada ise 22. sayfada kanıtlanabildiğini söyleyerek eğleniyor.
+  bir-artı-bir : 1 + 1 ≡ 2
+  bir-artı-bir = yans
+
+  -- ve heyecan verici 0 1 e eşit değildir kanıtı.
+  sıfır-bir-değil : 0 ≡ 1 → ⊥
+  sıfır-bir-değil ()
+
+  -- Çok şekilli türlerin eşitliği ile ilgili kanıt.
+  aynı-girdiyi-döner : {A : Tür} → (a : A) → a aynı ≡ a
+  aynı-girdiyi-döner a = yans
+
+  -- Eşitliğin bakışlılık özelliğinin kanıtı.
+  bakş : {A : Tür} {a b : A} → a ≡ b → b ≡ a
+  bakş yans = yans
+
+  -- Eşitliğin geçişlilik özelliğinin kanıtı.
+  geçş : {A : Tür} {a b c : A} → a ≡ b → b ≡ c → a ≡ c
+  geçş yans yans = yans
+
+  -- Eşitliğin kalandaşlık özelliği kanıtı.
+  kalandş : {A B : Tür} {a b : A} → (işlv : A → B)
+              → a ≡ b → işlv a ≡ işlv b
+  kalandş işlv yans = yans
+
+  -- uzunluk işlevi için birim sınaması yazmak için bir kısayol.
+  -- Eğer herhangi bir şey değişir ve eşitlik sağlanmazsa
+  -- Agda tür taramasını başarılı sonlanmadığından hemen haberimiz
+  -- olacaktır.
+  uzunluk-sınama-1 : (1 :: 2 :: []) uzunluk ≡ 2
+  uzunluk-sınama-1 = yans
+
+  -- Eşitliklerle akıl yürütme kanıtları
