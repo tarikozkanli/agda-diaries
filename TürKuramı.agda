@@ -1,10 +1,18 @@
 module TürKuramı where
 
 -- Jesper Cocks'un "Programming and Proving in Agda" öğretgesindeki
--- izgeler Türkçeleştirilmiştir. İzgeler Türkçeleştirilirken
--- Türkçe'nin doğasına uygun bazı yapı değişiklikleri yapılmıştır.
--- Bu öğretge konuya kuramsal ve uygulamasal açıdan giriş için
--- kullanılabilecek en uygun metinlerden biridir.
+-- izgeler Türkçeleştirilmiştir. İzgeler Türkçeleştirilirken, işlev ve
+-- türlerde Türkçe'nin doğasına uygun bazı yapı değişiklikleri yapılmıştır.
+-- Türkçede konunun daha rahat anlaşılmasına yardımcı olacak sezgisel olarak
+-- güçlü ifadeler seçilmeye çalışılmıştır.
+
+-- Bu öğretge bağımlı türler konusuna kuramsal ve uygulamasal açıdan giriş
+-- için kullanılabilecek en uygun metinlerden biridir.
+
+-- Bu izge dosyasında standart kütüphane kullanılmamış, gerekli olan her tür
+-- ve işlev kendi içinde tanımlanmıştır. Bu anlamda kendi kendine yeten
+-- bir agda dosyasıdır.
+
 
   -- Tür kuramında türe küme demeyelim
   Tür = Set
@@ -242,7 +250,7 @@ module TürKuramı where
   dizçevirdiz' (a :: alar) = a ::' (dizçevirdiz' alar)
 
 
-  -- Dikkat edilirse, eğer Listenin uzunluğunu yanlış verirsek
+  -- Dikkat edilirse, eğer dizelgenin uzunluğunu yanlış verirsek
   -- tür doğrulanamayacaktır.
   dizelge'1 : Dizelge' Doğruluk
   dizelge'1 = (3 , doğru :: yanlış :: yanlış :: [])
@@ -387,8 +395,119 @@ module TürKuramı where
   -- uzunluk işlevi için birim sınaması yazmak için bir kısayol.
   -- Eğer herhangi bir şey değişir ve eşitlik sağlanmazsa
   -- Agda tür taramasını başarılı sonlanmadığından hemen haberimiz
-  -- olacaktır.
+  -- olacaktır. Ayrıca uzunluk işlevinin girdisini soldan
+  -- aldığı unutulmamalı izlek okunurken.
   uzunluk-sınama-1 : (1 :: 2 :: []) uzunluk ≡ 2
   uzunluk-sınama-1 = yans
 
-  -- Eşitliklerle akıl yürütme kanıtları
+  -- Eşitliklerle akıl yürütme kanıtları için
+  -- gerekli yardımcı türler.
+  başla_ : {A : Tür} {a b : A} → a ≡ b → a ≡ b
+  başla k = k
+
+  _bitir : {A : Tür} → (a : A) → a ≡ a
+  k bitir = yans
+
+  _=⟨_⟩_ : {A : Tür} → (a : A) → {b c : A}
+             → a ≡ b → b ≡ c → a ≡ c
+  a =⟨ k ⟩ l = geçş k l
+
+  _=⟨⟩_ : {A : Tür} → (a : A) → {b : A}
+             → a ≡ b → a ≡ b
+  a =⟨⟩ k = a =⟨ yans ⟩ k
+
+  infix 1 başla_
+  infix 3 _bitir
+  infixr 2 _=⟨_⟩_
+  infixr 2 _=⟨⟩_
+
+  [_] : {A : Tür} → A → Dizelge A
+  [ a ] = a :: []
+
+  tersi : {A : Tür} → Dizelge A → Dizelge A
+  tersi [] = []
+  tersi (a :: alar) = tersi alar ++ [ a ]
+
+  -- Tek üyeli dizelgenin tersinin aynı olduğunun kanıtı
+  teklinin-tersi : {A : Tür} (a : A) → tersi [ a ] ≡ [ a ]
+  teklinin-tersi a =
+    başla  -- kanıta başla
+      tersi [ a ]
+    =⟨⟩ -- [_] nin tanımı
+      tersi (a :: [])
+    =⟨⟩ -- tersi nin ikinci eşitliğini uygula
+      tersi [] ++ [ a ]
+    =⟨⟩ -- tersi nin ilk eşitliğini uygula
+      [] ++ [ a ]
+    =⟨⟩ -- _++_ yi uygula
+      [ a ]
+    bitir  -- kanıtlandı
+
+  -- (d değil) değil = d önermesinin kanıtı. d : Doğruluk
+  değil-değil : (d : Doğruluk) → (d değil) değil ≡ d
+  değil-değil yanlış =
+    başla
+      (yanlış değil) değil
+    =⟨⟩ -- içteki değilleme
+      doğru değil
+    =⟨⟩ -- değilleme
+      yanlış
+    bitir
+  değil-değil doğru =
+    başla
+      (doğru değil) değil
+    =⟨⟩ -- içteki değilleme
+      yanlış değil
+    =⟨⟩ -- değilleme
+      doğru
+    bitir
+
+  -- d + 0 = d önermesinin kanıtı : Doğal
+  d-artı-0 : (d : Doğal) → d + 0 ≡ d
+  d-artı-0 sıfır =
+    başla
+      sıfır + sıfır
+    =⟨⟩
+      sıfır
+    bitir
+  d-artı-0 (ard d) =
+    başla
+      (ard d) + sıfır
+    =⟨⟩ -- + yı uyguluyoruz
+      ard (d + sıfır)
+    =⟨ kalandş ard (d-artı-0 d) ⟩ -- tüme varım varsayımını uyguluyoruz
+      ard d
+    bitir
+
+  -- d + ard e = ard (d + e)
+  topl-ard-ard-topl : (d e : Doğal) → d + ard e ≡ ard (d + e)
+  topl-ard-ard-topl sıfır e = yans
+  topl-ard-ard-topl (ard d) e =
+    başla
+      ard d + ard e
+    =⟨⟩
+      ard (d + (ard e))
+    =⟨ kalandş ard (topl-ard-ard-topl d e) ⟩
+      ard (ard (d + e))
+    bitir
+
+  -- d + e = e + d
+  topl-değişme-özelliği : (d e : Doğal) → d + e ≡ e + d
+  topl-değişme-özelliği d sıfır =
+    başla
+      d + sıfır
+    =⟨ d-artı-0 d ⟩ -- Yukarıda kanıtlanan savın kullanımı
+      d
+    =⟨⟩ -- _+_ tanımının tersine uygulanışı
+      sıfır + d
+    bitir
+  topl-değişme-özelliği d (ard e) =
+    başla
+      d + (ard e)
+    =⟨ topl-ard-ard-topl d e ⟩
+      ard (d + e)
+    =⟨ kalandş ard (topl-değişme-özelliği d e) ⟩
+      ard (e + d)
+    =⟨⟩ -- _+_ tanımının tersine uygulanışı
+      (ard e) + d
+    bitir

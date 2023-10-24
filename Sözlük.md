@@ -2,6 +2,7 @@
 
 * Tür: Type
 * Küme: Set
+* İzge: Code
 * Dizelge: List
 * Taşıyıcı: Vector
 * İşlev: Function
@@ -16,8 +17,10 @@
 * Belki: Maybe
 * Hangisi: Either
 * Dışlanan orta kanunu: Law of excluded middle
-* İzge: Code
 * Öğretge: Tutorial
 * Eklenti: Pragma (Agda, Haskell, Idris etc.)
 * Bakışlılık / Bakışık: Simetri / Simetrik
-Kalandaşlık: Congruence 
+* Kalandaşlık: Congruence 
+* Tekli : Singleton
+* Tersi : Reverse
+* Sav : Teorem
