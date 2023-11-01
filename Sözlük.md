@@ -12,7 +12,7 @@
 * Kanıt: Proof
 * Önerme: Proposition
 * İç çarpım: Dot product
-* Doğal: Natural number
+* Doğal sayı: Natural number
 * Doğruluk: Boolean
 * Belki: Maybe
 * Hangisi: Either
@@ -21,6 +21,8 @@
 * Eklenti: Pragma (Agda, Haskell, Idris etc.)
 * Bakışlılık / Bakışık: Simetri / Simetrik
 * Kalandaşlık: Congruence 
-* Tekli : Singleton
-* Tersi : Reverse
-* Sav : Teorem
+* Tekli: Singleton
+* Tersi: Reverse
+* Sav: Teorem
+* Değişme Özelliği: Commutativity
+* Birleşme Özelliği: Associativity
