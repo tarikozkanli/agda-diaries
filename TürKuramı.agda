@@ -682,8 +682,12 @@ eşle-bileşke f g (a :: alar) =
     eşle (a :: alar) (f ∘ g)
   =⟨⟩
     ((f ∘ g) a) :: eşle alar (f ∘ g)
+  =⟨⟩
+    f(g a) :: eşle alar (f ∘ g)
   =⟨ kalandş (f (g a) ::_) (eşle-bileşke f g alar) ⟩
-    f(g a) :: (eşle (eşle alar g) f)
+    f(g a) :: eşle (eşle alar g) f
+  =⟨⟩
+    eşle (g a :: eşle alar g) f
   =⟨⟩
     eşle (eşle (a :: alar) g) f
   bitir
