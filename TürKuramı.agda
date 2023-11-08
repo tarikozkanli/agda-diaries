@@ -632,3 +632,58 @@ tersinin-tersi (a :: alar) =
           =⟨⟩
             (d :: dler) ++ ( b ++ c)
           bitir
+
+-- eşle işlevinin 2 işlevge yasasına uyduğunun kanıtı
+-- 1. eşle aynı = aynı
+-- 2. eşle (i ∘ j) = eşle i ∘ eşle j
+-- ∘ : işlev bileşkesi
+
+-- eşle d aynı ≡ d
+eşle-aynı : {A : Tür} (d : Dizelge A) → eşle d _aynı ≡ d
+eşle-aynı [] =
+  başla
+    eşle [] _aynı
+  =⟨⟩
+    [] aynı
+  =⟨⟩
+    []
+  bitir
+eşle-aynı (a :: alar) =
+  başla
+    eşle (a :: alar) _aynı
+  =⟨⟩
+    (a aynı) :: (eşle alar _aynı)
+  =⟨⟩
+    a :: (eşle alar _aynı)
+  =⟨ kalandş (a ::_) (eşle-aynı alar) ⟩
+    (a :: alar)
+  bitir
+
+-- İşlev bileşkesi tanımı
+_∘_ : {A B C : Tür} → (B → C) → (A → B) → (A → C)
+g ∘ h = λ x → g(h(x))
+
+-- eşle (i ∘ j) ≡ eşle i ∘ eşle j
+eşle-bileşke : {A B C : Tür} → (f : B → C) → (g : A → B)
+                → (d : Dizelge A)
+                → eşle d (f ∘ g) ≡ eşle (eşle d g) f
+eşle-bileşke f g [] =
+  başla
+    eşle [] (f ∘ g)
+  =⟨⟩
+    []
+  =⟨⟩
+    eşle [] f
+  =⟨⟩
+   eşle (eşle [] g) f
+  bitir
+eşle-bileşke f g (a :: alar) =
+  başla
+    eşle (a :: alar) (f ∘ g)
+  =⟨⟩
+    ((f ∘ g) a) :: eşle alar (f ∘ g)
+  =⟨ kalandş (f (g a) ::_) (eşle-bileşke f g alar) ⟩
+    f(g a) :: (eşle (eşle alar g) f)
+  =⟨⟩
+    eşle (eşle (a :: alar) g) f
+  bitir

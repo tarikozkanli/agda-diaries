@@ -26,3 +26,6 @@
 * Sav: Teorem
 * Değişme Özelliği: Commutativity
 * Birleşme Özelliği: Associativity
+* İşlevge: Functor
+* Tümcü diller: Total languages
+* Üye: Element
