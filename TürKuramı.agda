@@ -691,3 +691,35 @@ eşle-bileşke f g (a :: alar) =
   =⟨⟩
     eşle (eşle (a :: alar) g) f
   bitir
+
+-- (eşle d f) uzunluk ≡ d uzunluk kanıtı
+eşle-uzunluk-eşit : {K L : Tür} → (d : Dizelge K)
+                     → (f : K → L)
+                     → (eşle d f) uzunluk ≡ d uzunluk
+eşle-uzunluk-eşit [] f = yans
+eşle-uzunluk-eşit (a :: alar) f =
+  başla
+    (eşle (a :: alar) f) uzunluk
+  =⟨⟩
+    ((f a) :: (eşle alar f)) uzunluk
+  =⟨⟩
+    1 + ((eşle alar f) uzunluk)
+  =⟨ kalandş (1 +_) (eşle-uzunluk-eşit alar f) ⟩
+    1 + (alar uzunluk)
+  =⟨⟩
+    (a :: alar) uzunluk
+  bitir
+
+-- Dizelgenin önünden istenen kadar alıp yeni bir dizelge döner.
+_den_al : {A : Tür} → (diz : Dizelge A) → (d : Doğal) → Dizelge A
+[] den d al = []
+(a :: alar) den sıfır al = []
+(a :: alar) den (ard d) al = a :: (alar den d al)
+
+-- Dizelgenin önünden istenen kadar atıp yeni bir dizelge döner.
+_den_at : {A : Tür} → (diz : Dizelge A) → (d : Doğal) → Dizelge A
+[] den d at = []
+(a :: alar) den sıfır at = (a :: alar)
+(a :: alar) den (ard d) at = alar den d at
+
+-- (diz den d all) ++ (diz den d at) ≡ d kanıtı
