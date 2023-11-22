@@ -24,6 +24,7 @@
 * Tekli: Singleton
 * Tersi: Reverse
 * Sav: Teorem
+* Önsav: Lemma
 * Değişme Özelliği: Commutativity
 * Birleşme Özelliği: Associativity
 * İşlevge: Functor

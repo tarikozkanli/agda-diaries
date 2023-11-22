@@ -50,8 +50,8 @@ data Doğal : Tür where
   ard   : Doğal → Doğal
 
 -- Bu eklenti sayesinde tanımladığımız Doğal
--- türümüz Agda'nın kendi eşlenik türü ile
 -- ilişkilendiriliyor ki normal rakamlar ile
+-- türümüz Agda'nın kendi eşlenik türü ile
 -- doğal sayıları ifade edebilelim.
 {-# BUILTIN NATURAL Doğal #-}
 
@@ -551,6 +551,16 @@ a-çoğalt-d-uzunluk-herzaman-d (ard d) a =
     (ard d)
   bitir
 
+
+ekle-[] : {A : Tür} → (diz : Dizelge A) → diz ++ [] ≡ diz
+ekle-[] [] = yans
+ekle-[] (a :: alar) =
+  başla
+    (a :: alar) ++ []
+  =⟨ kalandş (a ::_) (ekle-[] alar) ⟩
+    (a :: alar)
+  bitir
+
 -- Bir dizelgenin tersinin tersi kendisidir.
 tersinin-tersi : {A : Tür} → (diz : Dizelge A)
                   → tersi (tersi diz) ≡ diz
@@ -582,15 +592,6 @@ tersinin-tersi (a :: alar) =
       =⟨⟩
         tersi bler ++ tersi []
       bitir
-      where
-        ekle-[] : {A : Tür} → (diz : Dizelge A) → diz ++ [] ≡ diz
-        ekle-[] [] = yans
-        ekle-[] (a :: alar) =
-          başla
-            (a :: alar) ++ []
-          =⟨ kalandş (a ::_) (ekle-[] alar) ⟩
-            (a :: alar)
-          bitir
     tersi-dağılım-özelliği (a :: alar) bler =
       başla
         tersi ((a :: alar) ++ bler)
@@ -722,4 +723,48 @@ _den_at : {A : Tür} → (diz : Dizelge A) → (d : Doğal) → Dizelge A
 (a :: alar) den sıfır at = (a :: alar)
 (a :: alar) den (ard d) at = alar den d at
 
--- (diz den d all) ++ (diz den d at) ≡ d kanıtı
+-- (diz den d al) ++ (diz den d at) ≡ d kanıtı
+al-ekle-at-eşit : {A : Tür} → (diz : Dizelge A) → (d : Doğal)
+                   → (diz den d al) ++ (diz den d at) ≡ diz
+al-ekle-at-eşit [] d = yans
+al-ekle-at-eşit (a :: alar) sıfır = yans
+al-ekle-at-eşit (a :: alar) (ard d) =
+  başla
+    ((a :: alar) den (ard d) al) ++ ((a :: alar) den (ard d) at)
+  =⟨⟩
+    (a :: (alar den d al)) ++ (alar den d at)
+  =⟨⟩
+    a :: ((alar den d al) ++ (alar den d at))
+  =⟨ kalandş (a ::_) (al-ekle-at-eşit alar d) ⟩
+    a :: alar
+  bitir
+
+-- tersi işlevinin daha hızlı ve karmaşıklığı O(n²)
+-- olan ++ işlevi yerine doğrusal olan başka bir
+-- yardımcı işlev kullanan sürümü
+tersi-birikim : {A : Tür} → Dizelge A → Dizelge A
+                 → Dizelge A
+tersi-birikim [] alar = alar
+tersi-birikim (a :: alar) diza = tersi-birikim alar (a :: diza)
+
+tersi' : {A : Tür} → Dizelge A → Dizelge A
+tersi' diz = tersi-birikim diz []
+
+-- tersi ve tersi' işlevlerinin aynı işleve sahip
+-- olduğunun kanıtı
+tersi-tersi' : {A : Tür} → (diz : Dizelge A)
+                → tersi' diz ≡ tersi diz
+tersi-tersi' diz =
+  başla
+    tersi' diz
+  =⟨⟩
+    tersi-birikim diz []
+  =⟨ tersi-birikim-önsav diz [] ⟩
+    tersi diz ++ []
+  =⟨ ekle-[] (tersi diz) ⟩
+    tersi diz
+  bitir
+  where
+    tersi-birikim-önsav : {A : Tür} → (diz1 diz2 : Dizelge A)
+                           → tersi-birikim diz1 diz2 ≡ tersi diz1 ++ diz2
+    tersi-birikim-önsav diz1 diz2 = ?
