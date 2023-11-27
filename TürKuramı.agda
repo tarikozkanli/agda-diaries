@@ -561,6 +561,31 @@ ekle-[] (a :: alar) =
     (a :: alar)
   bitir
 
+ekle-birleşme-özelliği : {A : Tür} → (a b c : Dizelge A)
+                          → (a ++ b) ++ c ≡ a ++ (b ++ c)
+ekle-birleşme-özelliği [] b c =
+  başla
+    ([] ++ b) ++ c
+  =⟨⟩
+    b ++ c
+  =⟨⟩
+    [] ++ (b ++ c)
+  bitir
+ekle-birleşme-özelliği (d :: dler) b c =
+  başla
+    ((d :: dler) ++ b) ++ c
+  =⟨⟩
+    (d :: (dler ++ b)) ++ c
+  =⟨⟩
+    ([ d ] ++ (dler ++ b)) ++ c
+  =⟨ kalandş  ([ d ] ++_) (ekle-birleşme-özelliği dler b c) ⟩
+    [ d ] ++ (dler ++ (b ++ c))
+  =⟨⟩
+    ([ d ] ++ dler) ++ (b ++ c)
+  =⟨⟩
+    (d :: dler) ++ ( b ++ c)
+  bitir
+
 -- Bir dizelgenin tersinin tersi kendisidir.
 tersinin-tersi : {A : Tür} → (diz : Dizelge A)
                   → tersi (tersi diz) ≡ diz
@@ -608,31 +633,6 @@ tersinin-tersi (a :: alar) =
       =⟨⟩
         tersi bler ++ tersi (a :: alar)
       bitir
-      where
-        ekle-birleşme-özelliği : {A : Tür} → (a b c : Dizelge A)
-                                  → (a ++ b) ++ c ≡ a ++ (b ++ c)
-        ekle-birleşme-özelliği [] b c =
-          başla
-            ([] ++ b) ++ c
-          =⟨⟩
-            b ++ c
-          =⟨⟩
-            [] ++ (b ++ c)
-          bitir
-        ekle-birleşme-özelliği (d :: dler) b c =
-          başla
-            ((d :: dler) ++ b) ++ c
-          =⟨⟩
-            (d :: (dler ++ b)) ++ c
-          =⟨⟩
-            ([ d ] ++ (dler ++ b)) ++ c
-          =⟨ kalandş  ([ d ] ++_) (ekle-birleşme-özelliği dler b c) ⟩
-            [ d ] ++ (dler ++ (b ++ c))
-          =⟨⟩
-            ([ d ] ++ dler) ++ (b ++ c)
-          =⟨⟩
-            (d :: dler) ++ ( b ++ c)
-          bitir
 
 -- eşle işlevinin 2 işlevge yasasına uyduğunun kanıtı
 -- 1. eşle aynı = aynı
@@ -767,4 +767,27 @@ tersi-tersi' diz =
   where
     tersi-birikim-önsav : {A : Tür} → (diz1 diz2 : Dizelge A)
                            → tersi-birikim diz1 diz2 ≡ tersi diz1 ++ diz2
-    tersi-birikim-önsav diz1 diz2 = ?
+    tersi-birikim-önsav [] diz2 =
+      başla
+        tersi-birikim [] diz2
+      =⟨⟩
+        diz2
+      =⟨⟩
+        [] ++ diz2
+      =⟨⟩
+        (tersi []) ++ diz2
+      bitir
+    tersi-birikim-önsav (a :: alar) diz =
+      başla
+        tersi-birikim (a :: alar) diz
+      =⟨⟩
+        tersi-birikim alar (a :: diz)
+      =⟨ tersi-birikim-önsav alar (a :: diz) ⟩
+        tersi alar ++ (a :: diz)
+      =⟨⟩
+        tersi alar ++ ([ a ] ++ diz)
+      =⟨ bakş (ekle-birleşme-özelliği (tersi alar) [ a ] diz) ⟩
+        (tersi alar ++ [ a ]) ++ diz
+      =⟨⟩
+        tersi (a :: alar) ++ diz
+      bitir
