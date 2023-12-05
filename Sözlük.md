@@ -30,3 +30,7 @@
 * İşlevge: Functor
 * Tümcü diller: Total languages
 * Üye: Element
+* Ağaç: Tree
+* Yaprak: Leaf
+* Boğum: Node
+* Düzleştir: Flatten

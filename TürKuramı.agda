@@ -791,3 +791,36 @@ tersi-tersi' diz =
       =⟨⟩
         tersi (a :: alar) ++ diz
       bitir
+
+-- Ağaç veri yapısı tanımı
+data Ağaç (A : Tür) : Tür where
+  yaprak : A → Ağaç A
+  boğum  : Ağaç A → Ağaç A → Ağaç A
+
+-- İlk akla gelen doğal ama etkili olmayan
+-- bir gerçekleme.
+düzleştir : {A : Tür} → Ağaç A → Dizelge A
+düzleştir (yaprak a) = [ a ]
+düzleştir (boğum ağç1 ağç2) = düzleştir ağç1 ++ düzleştir ağç2
+
+-- Birikimli ve etkili bir gerçekleme.
+düzleştir-birikim : {A : Tür} → Ağaç A → Dizelge A
+                    → Dizelge A
+düzleştir-birikim (yaprak a) diz = a :: diz
+düzleştir-birikim (boğum ağç1 ağç2) diz =
+  düzleştir-birikim ağç1 (düzleştir-birikim ağç2 diz)
+
+düzleştir' : {A : Tür} → Ağaç A → Dizelge A
+düzleştir' ağç = düzleştir-birikim ağç []
+
+-- düzleştir ile düzleştir-birikim işlevlerinin
+-- ilişkisinin kanıtları
+düzleştir-birikim-düzleştir : {A : Tür} → (ağç : Ağaç A) → (diz : Dizelge A)
+                               → düzleştir-birikim ağç diz ≡ düzleştir ağç ++ diz
+düzleştir-birikim-düzleştir (yaprak a) diz = {!!}
+düzleştir-birikim-düzleştir (boğum ağç1 ağç2) diz = {!!}
+
+-- düzleştir' ve düzleştir işlevlerinin eşitliğinin kanıtı
+düzleştir'-düzleştir : {A : Tür} → (ağç : Ağaç A)
+                        → düzleştir' ağç ≡ düzleştir ağç
+düzleştir'-düzleştir ağç = {!!}
