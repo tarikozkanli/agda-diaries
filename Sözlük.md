@@ -34,3 +34,4 @@
 * Yaprak: Leaf
 * Boğum: Node
 * Düzleştir: Flatten
+* İfade: Expression

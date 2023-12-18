@@ -798,7 +798,7 @@ data Ağaç (A : Tür) : Tür where
   boğum  : Ağaç A → Ağaç A → Ağaç A
 
 -- İlk akla gelen doğal ama etkili olmayan
--- bir gerçekleme.
+-- bir ağaç düzleme işlevi gerçeklemesi.
 düzleştir : {A : Tür} → Ağaç A → Dizelge A
 düzleştir (yaprak a) = [ a ]
 düzleştir (boğum ağç1 ağç2) = düzleştir ağç1 ++ düzleştir ağç2
@@ -817,10 +817,59 @@ düzleştir' ağç = düzleştir-birikim ağç []
 -- ilişkisinin kanıtları
 düzleştir-birikim-düzleştir : {A : Tür} → (ağç : Ağaç A) → (diz : Dizelge A)
                                → düzleştir-birikim ağç diz ≡ düzleştir ağç ++ diz
-düzleştir-birikim-düzleştir (yaprak a) diz = {!!}
-düzleştir-birikim-düzleştir (boğum ağç1 ağç2) diz = {!!}
+düzleştir-birikim-düzleştir (yaprak a) diz =
+  başla
+    düzleştir-birikim (yaprak a) diz
+  =⟨⟩
+    a :: diz
+  =⟨⟩
+    [ a ] ++ diz
+  =⟨⟩
+    düzleştir (yaprak a) ++ diz
+  bitir
+düzleştir-birikim-düzleştir (boğum solağç sağağç) diz =
+  başla
+    düzleştir-birikim (boğum solağç sağağç) diz
+  =⟨⟩
+    düzleştir-birikim solağç (düzleştir-birikim sağağç diz)
+  =⟨ düzleştir-birikim-düzleştir solağç (düzleştir-birikim sağağç diz) ⟩
+    düzleştir solağç ++ (düzleştir-birikim sağağç diz)
+  =⟨ kalandş (düzleştir solağç ++_) (düzleştir-birikim-düzleştir sağağç diz)⟩
+    düzleştir solağç ++ (düzleştir sağağç ++ diz)
+  =⟨ bakş (ekle-birleşme-özelliği (düzleştir solağç) (düzleştir sağağç) diz) ⟩
+    (düzleştir solağç ++ düzleştir sağağç) ++ diz
+  =⟨⟩
+    (düzleştir (boğum solağç sağağç)) ++ diz
+  bitir
 
 -- düzleştir' ve düzleştir işlevlerinin eşitliğinin kanıtı
 düzleştir'-düzleştir : {A : Tür} → (ağç : Ağaç A)
                         → düzleştir' ağç ≡ düzleştir ağç
-düzleştir'-düzleştir ağç = {!!}
+düzleştir'-düzleştir (yaprak a) =
+  başla
+    düzleştir' (yaprak a)
+  =⟨⟩
+    düzleştir-birikim (yaprak a) []
+  =⟨⟩
+    a :: []
+  =⟨⟩
+    [ a ]
+  =⟨⟩
+    düzleştir (yaprak a)
+  bitir
+düzleştir'-düzleştir (boğum solağç sağağç) =
+  başla
+    düzleştir' (boğum solağç sağağç)
+  =⟨⟩
+    düzleştir-birikim (boğum solağç sağağç) []
+  =⟨⟩
+    düzleştir-birikim solağç (düzleştir-birikim sağağç [])
+  =⟨ düzleştir-birikim-düzleştir solağç (düzleştir-birikim sağağç []) ⟩
+    düzleştir solağç ++ (düzleştir-birikim sağağç [])
+  =⟨ kalandş ((düzleştir solağç) ++_) (düzleştir-birikim-düzleştir sağağç []) ⟩
+    düzleştir solağç ++ (düzleştir sağağç ++ [])
+  =⟨ kalandş ((düzleştir solağç) ++_) (ekle-[] (düzleştir sağağç)) ⟩
+    düzleştir solağç ++ düzleştir sağağç
+  =⟨⟩
+    düzleştir (boğum solağç sağağç)
+  bitir
