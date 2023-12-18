@@ -873,3 +873,81 @@ düzleştir'-düzleştir (boğum solağç sağağç) =
   =⟨⟩
     düzleştir (boğum solağç sağağç)
   bitir
+
+-- Derleyici doğruluğu kanıtları
+data Deyiş : Tür where
+  değerD : Doğal → Deyiş
+  toplaD : Deyiş → Deyiş → Deyiş
+
+değerle : Deyiş → Doğal
+değerle (değerD d) = d
+değerle (toplaD dey1 dey2) = değerle dey1 + değerle dey2
+
+data Komut : Tür where
+  İT    : Doğal → Komut
+  TOPLA : Komut
+
+Yığın = Dizelge Doğal
+İzge = Dizelge Komut
+
+çalıştır : İzge → Yığın → Yığın
+çalıştır [] yığ = yığ
+çalıştır (İT değ :: izgler) yığ = çalıştır izgler (değ :: yığ)
+çalıştır (TOPLA :: izgler) (d1 :: d2 :: yığ) =
+  çalıştır izgler (d2 + d1 :: yığ)
+çalıştır (TOPLA :: izgler) _ = []
+
+-- İlk sürüm, etkili değil ve akıl yürütmesi zor
+-- derle : Deyiş →  İzge
+-- derle (değerD d) = [ İT d ]
+-- derle (toplaD e1 e2) = derle e1 ++ derle e2 ++ [ TOPLA ]
+
+-- İkinci sürüm, çok daha hızlı ve doğruluğunun kanıtlanması
+-- daha kolay.
+derle' : Deyiş → İzge → İzge
+derle' (değerD d) izgler = İT d :: izgler
+derle' (toplaD deyş1 deyş2) izgler = derle' deyş1 (derle' deyş2 (TOPLA :: izgler))
+
+derle : Deyiş → İzge
+derle deyş = derle' deyş []
+
+-- Derlemenin doğru izge ürettiğinin kanıtı
+derle'-çalıştır-değerle : (deyş : Deyiş) (yığ : Yığın) (izgler : İzge)
+  → çalıştır (derle' deyş izgler) yığ ≡ çalıştır izgler (değerle deyş :: yığ)
+derle'-çalıştır-değerle (değerD doğ) yığ izgler =
+  başla
+    çalıştır (derle' (değerD doğ) izgler) yığ
+  =⟨⟩
+    çalıştır (İT doğ :: izgler) yığ
+  =⟨⟩
+    çalıştır izgler (doğ :: yığ)
+  =⟨⟩
+    çalıştır izgler (değerle (değerD doğ) :: yığ)
+  bitir
+derle'-çalıştır-değerle (toplaD deyş1 deyş2) yığ izgler =
+  başla
+    çalıştır (derle' (toplaD deyş1 deyş2) izgler) yığ
+  =⟨⟩
+    çalıştır (derle' deyş1 (derle' deyş2 (TOPLA :: izgler))) yığ
+  =⟨ derle'-çalıştır-değerle deyş1 yığ (derle' deyş2 (TOPLA :: izgler)) ⟩
+    çalıştır (derle' deyş2 (TOPLA :: izgler)) (değerle deyş1 :: yığ)
+  =⟨ derle'-çalıştır-değerle deyş2 (değerle deyş1 :: yığ) (TOPLA :: izgler) ⟩
+    çalıştır (TOPLA :: izgler) ((değerle deyş2) :: (değerle deyş1) :: yığ)
+  =⟨⟩
+    çalıştır izgler ((değerle deyş1 + değerle deyş2) :: yığ)
+  =⟨⟩
+    çalıştır izgler (değerle (toplaD deyş1 deyş2) :: yığ)
+  bitir
+
+derle-çalıştır-değerle : (deyş : Deyiş)
+                           → çalıştır (derle deyş) [] ≡ [ değerle deyş ]
+derle-çalıştır-değerle deyş =
+  başla
+    çalıştır (derle deyş) []
+  =⟨ derle'-çalıştır-değerle deyş [] [] ⟩
+    çalıştır [] (değerle deyş :: [])
+  =⟨⟩
+    değerle deyş :: []
+  =⟨⟩
+    [ değerle deyş ]
+  bitir

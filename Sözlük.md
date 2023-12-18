@@ -34,4 +34,12 @@
 * Yaprak: Leaf
 * Boğum: Node
 * Düzleştir: Flatten
-* İfade: Expression
+* Deyiş: Expression
+* Derleyici: Compiler 
+* Operation: Komut
+* İt: Push
+* Topla: Add
+* Yığın: Stack
+* Çalıştır: Execute
+* Sürüm: Version
+
